@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PiketIn | Blue Work Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter'] }, colors: { brand: { 50:'#eff6ff', 100:'#dbeafe', 500:'#0c77f0', 600:'#0a65cc', 700:'#0952a8', 900:'#0a2a52' } } } } }
+</script>
+<style> *{font-family:Inter} .scrollbar-hide::-webkit-scrollbar{display:none} </style>
+</head>
+<body class="bg-[#f3f7fd] text-slate-800">
+
+<!-- LOGIN - BLUE CORPORATE -->
+<div id="loginPage" class="min-h-screen grid md:grid-cols-2">
+  <!-- Left Branding -->
+  <div class="bg-brand-900 relative hidden md:flex flex-col justify-between p-12 overflow-hidden">
+    <div class="absolute w-[800px] h-[800px] bg-brand-500 rounded-full blur-[120px] -top-[200px] -left-[200px] opacity-30"></div>
+    <div class="relative z-10">
+      <div class="flex items-center gap-3 text-white font-extrabold text-xl"><div class="w-9 h-9 bg-white text-brand-700 rounded-lg flex items-center justify-center">P</div> PiketIn.</div>
+    </div>
+    <div class="relative z-10 text-white">
+      <h1 class="text-[48px] font-extrabold leading-[0.9] tracking-tight">SISTEM PENJADWALAN<br>PIKET <span class="text-blue-300">KELAS</span></h1>
+      <p class="text-blue-200 mt-6 max-w-sm text-[15px] leading-relaxed">Portal absensi piket kelas XII.Reguler 4</p>
+      <div class="mt-10 flex items-center gap-4">
+        <div class="flex -space-x-3"><img src="https://i.pravatar.cc/100?img=1" class="w-9 h-9 rounded-full border-2 border-brand-900"><img src="https://i.pravatar.cc/100?img=2" class="w-9 h-9 rounded-full border-2 border-brand-900"><img src="https://i.pravatar.cc/100?img=3" class="w-9 h-9 rounded-full border-2 border-brand-900"></div>
+        <span class="text-xs text-blue-200">36 siswa aktif menggunakan</span>
+      </div>
+    </div>
+    <div class="relative z-10 text-[11px] text-blue-300/60">© 2026 PiketIn Portal</div>
+  </div>
+
+  <!-- Right Form -->
+  <div class="flex items-center justify-center p-6 bg-white">
+    <div class="w-full max-w-[380px]">
+      <div class="md:hidden flex items-center gap-2 font-extrabold text-xl mb-8"><div class="w-9 h-9 bg-brand-600 text-white rounded-lg flex items-center justify-center">P</div> PiketIn.</div>
+      <img src="imej/goloo.jpeg" width="350" height="200">
+      <h2 class="text-[28px] font-bold tracking-tight">Selamat datang kembali</h2>
+      <p class="text-slate-500 text-sm mt-2 mb-8">Masuk untuk melanjutkan absensi piket.</p>
+      
+      <div class="space-y-4">
+        <div><label class="text-[12px] font-semibold text-slate-600 ml-1">Nama Panggilan</label><input id="username" placeholder="Nama Siswa" class="mt-1 w-full bg-[#f3f7fd] border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition"></div>
+        <div><label class="text-[12px] font-semibold text-slate-600 ml-1">Password (No Absen)</label><input id="password" type="password" placeholder="••••" class="mt-1 w-full bg-[#f3f7fd] border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition"></div>
+        <button onclick="login()" class="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl py-3.5 font-semibold text-sm transition shadow-[0_8px_20px_rgba(12,119,240,.3)] active:scale-[0.98]">Masuk ke Portal</button>
+        <p id="loginMsg" class="text-xs text-center text-red-500"></p>
+      </div>
+
+      <div class="mt-8 grid grid-cols-2 gap-3">
+        <div class="bg-[#f3f7fd] rounded-xl p-3 border"><p class="text-[10px] font-bold text-slate-400 uppercase">Akses Siswa</p><p class="text-xs font-semibold mt-1">Nama & No Absen</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PORTAL -->
+<div id="mainPage" class="hidden min-h-screen">
+  <!-- Topbar -->
+  <header class="h-[64px] bg-white border-b border-slate-200 sticky top-0 z-20 flex items-center">
+    <div class="max-w-[1280px] mx-auto w-full px-6 flex justify-between items-center">
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-2 font-extrabold"><div class="w-8 h-8 bg-brand-600 text-white rounded-lg flex items-center justify-center">P</div> PiketIn.</div>
+        <nav class="hidden md:flex items-center gap-1 bg-[#f3f7fd] p-1 rounded-full border">
+          <button onclick="showTab('jadwal')" id="btn-jadwal" class="tab-btn bg-white shadow-sm border px-5 py-2 rounded-full text-xs font-bold">Jadwal Piket</button>
+          <button onclick="showTab('absensi')" id="btn-absensi" class="tab-btn px-5 py-2 rounded-full text-xs font-bold text-slate-500">Absensi</button>
+          <button onclick="showTab('info')" id="btn-info" class="tab-btn px-5 py-2 rounded-full text-xs font-bold text-slate-500">Informasi</button>
+          <button onclick="showTab('recap')" id="recapTabBtn" class="tab-btn hidden px-5 py-2 rounded-full text-xs font-bold text-slate-500">Recap Admin</button>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="jamInfo" class="hidden md:block text-[11px] font-mono bg-slate-900 text-white px-3 py-1.5 rounded-full"></div>
+        <div id="userInfo" class="text-xs font-semibold bg-[#f3f7fd] border px-3 py-2 rounded-full"></div>
+        <button onclick="logout()" class="w-8 h-8 rounded-full bg-white border flex items-center justify-center">↪</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[1280px] mx-auto px-4 md:px-6 py-6">
+    <!-- MOBILE TABS -->
+    <div class="md:hidden flex gap-2 overflow-auto scrollbar-hide mb-4">
+      <button onclick="showTab('jadwal')" class="tab-btn-m bg-slate-900 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Jadwal</button>
+      <button onclick="showTab('absensi')" class="tab-btn-m bg-white border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Absensi</button>
+      <button onclick="showTab('info')" class="tab-btn-m bg-white border px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Info</button>
+    </div>
+
+    <!-- JADWAL BLUE GRID -->
+    <div id="jadwal" class="tab-content grid grid-cols-1 md:grid-cols-12 gap-4">
+      <!-- Diisi JS -->
+    </div>
+
+    <!-- ABSENSI KERJA MODERN -->
+    <div id="absensi" class="tab-content hidden">
+      <div class="grid md:grid-cols-12 gap-6">
+        <div class="md:col-span-7 bg-white rounded-[20px] border shadow-sm overflow-hidden">
+          <div class="p-6 border-b flex justify-between items-center">
+            <div><h3 class="font-bold">Live Attendance Camera</h3><p class="text-xs text-slate-500 mt-1">Pastikan wajah anda terlihat jelas</p></div>
+            <span id="absenStatus" class="text-[10px] font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-700">CHECKING</span>
+          </div>
+          <div class="p-3 bg-slate-900 m-3 rounded-[16px] aspect-video relative flex items-center justify-center overflow-hidden">
+            <video id="video" autoplay playsinline class="w-full h-full object-cover rounded-[12px] hidden"></video>
+            <img id="preview" class="w-full h-full object-cover rounded-[12px] hidden">
+            <div id="placeholderCam" class="text-white/60 text-center"><div class="w-16 h-16 mx-auto bg-white/10 rounded-2xl flex items-center justify-center text-2xl mb-3">◉</div><p class="text-xs">Kamera belum aktif<br><span class="text-[11px] text-white/40">Absensi hanya 14:20-15:45 WIB</span></p></div>
+            <div class="absolute bottom-4 left-4 flex items-center gap-2 bg-black/50 backdrop-blur px-3 py-1.5 rounded-full"><div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div><span id="hariIni" class="text-[10px] font-bold text-white tracking-widest">--</span></div>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-3">
+            <button id="btnKamera" onclick="startCamera()" class="bg-[#f3f7fd] border py-3 rounded-xl text-sm font-semibold">Aktifkan Kamera</button>
+            <button id="btnFoto" onclick="takePhoto()" class="hidden bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-blue-200">Konfirmasi Absensi</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 space-y-4">
+          <div class="bg-brand-600 rounded-[20px] p-6 text-white relative overflow-hidden">
+            <div class="absolute w-64 h-64 bg-white/20 rounded-full blur-3xl -right-20 -top-20"></div>
+            <p class="text-blue-100 text-[11px] font-bold tracking-widest uppercase relative">Aturan Absensi</p>
+            <h4 class="text-xl font-bold mt-2 leading-tight relative">Foto secara langsung<br>
+            <ul class="mt-4 space-y-2 text-[12px] text-blue-50 relative">
+              <li class="flex gap-2"><span>•</span> Jam absensi 14:20 - 15:45 WIB</li>
+              <li class="flex gap-2"><span>•</span> Senin - Jumat</li>
+              <li class="flex gap-2"><span>•</span> Wajib foto di area kelas</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-[20px] border p-6">
+            <h4 class="font-bold text-sm">Status Saya Hari Ini</h4>
+            <div id="myStatus" class="mt-4 text-xs text-slate-500">Belum ada data absensi hari ini.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div id="info" class="tab-content hidden max-w-3xl">
+      <div id="adminInfoForm" class="hidden bg-white rounded-[20px] border p-6 mb-6">
+        <h3 class="font-bold text-sm">Buat Pengumuman Baru (Admin)</h3>
+        <textarea id="infoText" placeholder="Tulis informasi penting untuk siswa..." class="mt-3 w-full bg-[#f3f7fd] border rounded-xl p-4 text-sm min-h-[100px] outline-none focus:bg-white focus:border-brand-500"></textarea>
+        <button onclick="kirimInfo()" class="mt-3 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold">Publikasikan & Kirim Notifikasi Push</button>
+      </div>
+      <div id="infoList" class="space-y-3"></div>
+    </div>
+
+    <!-- RECAP -->
+    <div id="recap" class="tab-content hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold">Recap Data Absensi (Admin Only)</h3>
+        <div class="flex gap-2"><button onclick="exportExcel()" class="bg-brand-600 text-white px-4 py-2 rounded-full text-xs font-bold">Export Excel</button><button onclick="hapusRecap()" class="bg-white border px-4 py-2 rounded-full text-xs font-bold text-red-500">Hapus</button></div>
+      </div>
+      <div class="bg-white rounded-[20px] border overflow-hidden"><div class="overflow-auto"><table id="recapTable" class="w-full text-sm"><thead class="bg-[#f3f7fd] text-[11px] text-slate-500 uppercase font-bold tracking-widest"><tr><th class="p-4 text-left">Dokumentasi</th><th class="p-4 text-left">Nama</th><th class="p-4">Hari</th><th class="p-4">Tanggal</th><th class="p-4">Jam</th></tr></thead><tbody class="divide-y"></tbody></table></div></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const siswaList = { "alfajri":1,"ainiya":2,"aji":3,"amira":4,"aurel":5,"bayu":6,"chanisa":7,"charisya":8,"daffa":9,"deidan":10,"dzaky":11,"farizt":12,"fellysita":13,"ivander":14,"jhonatan":15,"kayla":16,"kemal":17,"kiara":18,"lintang":19,"tegar":20,"ayoem":21,"rayhan m":22,"rifqi":23,"roman":24,"alfiara":25,"nazila":26,"neysha":27,"hamidah":28,"raihan w":29,"raisa":30,"rasya a":31,"rasya z":32,"reza":33,"septiana":34,"zaidan":35,"zilfanny":36 };
+const jadwal = {"Senin":["Ayoem","Kiara","Lintang","Septiana","Ainiya","Aji","Farizt","Daffa"],"Selasa":["Aurel","Amira","Bayu","Chanisa","Alfajri","Reza","Zaidan"],"Rabu":["Roman","Rifqi","Rasya Z","Dzaky","Kayla","Nazila","Neysha"],"Kamis":["Ivander","Kemal","Charisya","Tegar","Raisa","Hamidah","Rayhan M"],"Jumat":["Rasya A","Raihan W","Fellysita","Deidan","Zilfanny","Jhonatan","Alfiara"]};
+let currentUser=null,role=null,stream=null;
+function login(){const u=document.getElementById('username').value.trim().toLowerCase();const p=document.getElementById('password').value.trim();if(u==='aditya'&&p==='242510677'){role='admin';currentUser='Aditya';}else if(siswaList[u]&&String(siswaList[u])===p){role='siswa';currentUser=u.split(' ').map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(' ');if(u==='rayhan m')currentUser='Rayhan M';if(u==='raihan w')currentUser='Raihan W';if(u==='rasya a')currentUser='Rasya A';if(u==='rasya z')currentUser='Rasya Z';else currentUser=currentUser.charAt(0).toUpperCase()+currentUser.slice(1);}else{return document.getElementById('loginMsg').innerText='Nama atau password salah!';}localStorage.setItem('piket_user',currentUser);localStorage.setItem('piket_role',role);Notification.requestPermission();masukApp();}
+function masukApp(){currentUser=localStorage.getItem('piket_user');role=localStorage.getItem('piket_role');if(!currentUser)return;document.getElementById('loginPage').classList.add('hidden');document.getElementById('mainPage').classList.remove('hidden');document.getElementById('userInfo').innerText=currentUser+' • '+role.toUpperCase();if(role==='admin')document.getElementById('recapTabBtn').classList.remove('hidden'),document.getElementById('adminInfoForm').classList.remove('hidden');renderJadwal();renderInfo();renderRecap();cekJam();setInterval(cekJam,30000);}
+function logout(){localStorage.clear();location.reload();}
+function showTab(id){document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-white','shadow-sm','border');b.classList.add('text-slate-500')});document.getElementById(id).classList.remove('hidden');document.getElementById('btn-'+id).classList.add('bg-white','shadow-sm','border');document.getElementById('btn-'+id).classList.remove('text-slate-500');}
+function renderJadwal(){const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const hariMap=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];const hariIniReal=hariMap[now.getDay()];let html=`<div class="md:col-span-12 bg-brand-600 rounded-[20px] p-6 text-white flex justify-between items-center"><div><p class="text-[11px] tracking-widest font-bold text-blue-200 uppercase">Hari Ini</p><h2 class="text-2xl font-bold mt-1">${hariIniReal}, ${now.toLocaleDateString('id-ID',{day:'numeric', month:'long'})}</h2></div><div class="text-right"><p class="text-xs text-blue-200">Total Siswa</p><p class="text-2xl font-bold">36</p></div></div>`;for(let h in jadwal){const isToday=h===hariIniReal;html+=`<div class="md:col-span-4 bg-white rounded-[20px] border p-5 ${isToday?'ring-2 ring-brand-500 shadow-[0_10px_30px_rgba(12,119,240,.15)]':''}"><div class="flex justify-between items-center mb-4"><h4 class="font-bold">${h}</h4><span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${isToday?'bg-brand-600 text-white':'bg-[#f3f7fd] border text-slate-500'}">${isToday?'ON DUTY':'OFF'}</span></div><div class="space-y-2">${jadwal[h].map((n,i)=>`<div class="flex items-center justify-between bg-[#f8fbff] border border-blue-50 rounded-xl px-3 py-2.5"><span class="flex items-center gap-2.5 text-sm font-medium"><span class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-[10px] font-bold">${i+1}</span>${n}</span><span class="w-2 h-2 rounded-full ${isToday?'bg-emerald-500':'bg-slate-300'}"></span></div>`).join('')}</div></div>`;}document.getElementById('jadwal').innerHTML=html;document.getElementById('hariIni').innerText=hariIniReal.toUpperCase()+' • LIVE';}
+function cekJam(){const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const jam=now.getHours()+now.getMinutes()/60;const day=now.getDay();document.getElementById('jamInfo').innerText=`${now.toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta'})} WIB • ${["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"][day]}`;const boleh=(day>=1&&day<=5)&&(jam>=14+20/60&&jam<=15+45/60);const status=document.getElementById('absenStatus');if(!boleh){status.innerText='⛔ TUTUP';status.className='text-[10px] font-bold px-3 py-1 rounded-full bg-red-100 text-red-600';}else{status.innerText='● BUKA';status.className='text-[10px] font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700';}return boleh;}
+async function startCamera(){if(!cekJam())return alert('Absensi hanya 14:20-15:45 WIB!');try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});document.getElementById('video').srcObject=stream;document.getElementById('video').classList.remove('hidden');document.getElementById('placeholderCam').classList.add('hidden');document.getElementById('btnKamera').classList.add('hidden');document.getElementById('btnFoto').classList.remove('hidden');}catch(e){alert(e.message)}}
+function takePhoto(){const video=document.getElementById('video');const canvas=document.getElementById('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext('2d').drawImage(video,0,0);const dataUrl=canvas.toDataURL('image/jpeg',0.7);document.getElementById('preview').src=dataUrl;document.getElementById('preview').classList.remove('hidden');document.getElementById('video').classList.add('hidden');stream.getTracks().forEach(t=>t.stop());const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const hariMap=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];let recap=JSON.parse(localStorage.getItem('piket_recap')||'[]');const todayStr=now.toLocaleDateString('id-ID');if(recap.find(r=>r.nama===currentUser&&r.tanggal===todayStr))return alert('Sudah absen hari ini!');recap.push({nama:currentUser,hari:hariMap[now.getDay()],tanggal:todayStr,jam:now.toLocaleTimeString('id-ID'),foto:dataUrl});localStorage.setItem('piket_recap',JSON.stringify(recap));renderRecap();checkMyStatus();}
+function checkMyStatus(){let recap=JSON.parse(localStorage.getItem('piket_recap')||'[]');const todayStr=new Date().toLocaleDateString('id-ID');const mine=recap.find(r=>r.nama===currentUser&&r.tanggal===todayStr);document.getElementById('myStatus').innerHTML=mine?`<div class="flex items-center gap-3"><img src="${mine.foto}" class="w-12 h-12 rounded-xl object-cover"><div><p class="font-bold text-slate-800">Sudah Absen - ${mine.jam}</p><p class="text-[11px]">Hari ${mine.hari}, ${mine.tanggal}</p></div></div>`:'<span class="text-amber-600 font-medium">⚠️ Kamu belum absen hari ini. Segera lakukan absensi.</span>';}
+function renderRecap(){let recap=JSON.parse(localStorage.getItem('piket_recap')||'[]');document.querySelector('#recapTable tbody').innerHTML=recap.map(r=>`<tr class="hover:bg-[#f3f7fd]"><td class="p-3"><img src="${r.foto}" class="w-10 h-10 rounded-lg object-cover"></td><td class="p-3 font-semibold">${r.nama}</td><td class="p-3"><span class="bg-blue-50 text-brand-600 px-2.5 py-1 rounded-full text-[11px] font-bold">${r.hari}</span></td><td class="p-3 text-xs">${r.tanggal}</td><td class="p-3 font-mono text-xs">${r.jam}</td></tr>`).join('');checkMyStatus();}
+function exportExcel(){const recap=JSON.parse(localStorage.getItem('piket_recap')||'[]');if(!recap.length)return alert('Belum ada data');const ws=XLSX.utils.json_to_sheet(recap.map(r=>({Nama:r.nama,Hari:r.hari,Tanggal:r.tanggal,Jam:r.jam})));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Recap");XLSX.writeFile(wb,`Recap_PiketIn_${new Date().toLocaleDateString('id-ID')}.xlsx`);}
+function hapusRecap(){if(confirm('Hapus semua data?')){localStorage.removeItem('piket_recap');renderRecap();}}
+function kirimInfo(){const text=document.getElementById('infoText').value;if(!text)return;let infos=JSON.parse(localStorage.getItem('piket_info')||'[]');infos.unshift({text,tgl:new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta'}),pengirim:currentUser});localStorage.setItem('piket_info',JSON.stringify(infos));document.getElementById('infoText').value='';renderInfo();if(Notification.permission==='granted')new Notification('Info PiketIn Baru',{body:text});}
+function renderInfo(){let infos=JSON.parse(localStorage.getItem('piket_info')||'[]');document.getElementById('infoList').innerHTML=infos.map(i=>`<div class="bg-white border rounded-[16px] p-5 flex gap-4"><div class="w-9 h-9 bg-brand-600 text-white rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">A</div><div><div class="flex gap-2 items-center"><p class="font-bold text-sm">${i.pengirim}</p><span class="text-[10px] text-slate-400">${i.tgl}</span></div><p class="text-sm text-slate-600 mt-1 leading-relaxed">${i.text}</p></div></div>`).join('')||'<div class="bg-white border rounded-[16px] p-10 text-center text-sm text-slate-400">Belum ada pengumuman</div>';}
+window.onload=()=>{if(localStorage.getItem('piket_user'))masukApp();}
+</script>
+<canvas id="canvas" class="hidden"></canvas>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiketIn - Sistem Piket Kelas</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- HALAMAN LOGIN -->
+    <div id="loginPage" class="page active">
+        <div class="login-card">
+            <h1>🧹 PiketIn</h1>
+            <p>Sistem Penjadwalan Piket Kelas</p>
+            <input type="text" id="username" placeholder="Nama Panggilan">
+            <input type="password" id="password" placeholder="Password (No Absen)">
+            <button onclick="login()">Masuk</button>
+            <small>Admin: Aditya | Siswa: Alfajri / 1 dst</small>
+            <div id="loginMsg"></div>
+        </div>
+    </div>
+
+    <!-- HALAMAN UTAMA -->
+    <div id="mainPage" class="page">
+        <nav>
+            <h2>PiketIn</h2>
+            <div>
+                <span id="userInfo"></span>
+                <button onclick="logout()">Keluar</button>
+            </div>
+        </nav>
+        <div class="tabs">
+            <button onclick="showTab('jadwal')" class="tab-btn active">Jadwal Piket</button>
+            <button onclick="showTab('absensi')" class="tab-btn">Absensi Piket</button>
+            <button onclick="showTab('info')" class="tab-btn">Informasi <span id="notifBadge"></span></button>
+            <button onclick="showTab('recap')" id="recapTabBtn" class="tab-btn" style="display:none;">Recap Excel (Admin)</button>
+        </div>
+
+        <div id="jadwal" class="tab-content active"></div>
+
+        <div id="absensi" class="tab-content">
+            <h3>Absensi Hari Ini: <span id="hariIni"></span></h3>
+            <p id="jamInfo"></p>
+            <div id="absensiArea">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <img id="preview" style="display:none;">
+                <button id="btnKamera" onclick="startCamera()">Buka Kamera</button>
+                <button id="btnFoto" onclick="takePhoto()" style="display:none;">Ambil & Upload Foto</button>
+                <p id="absenStatus"></p>
+            </div>
+        </div>
+
+        <div id="info" class="tab-content">
+            <div id="adminInfoForm" style="display:none;">
+                <h3>Kirim Informasi (Admin)</h3>
+                <textarea id="infoText" placeholder="Tulis informasi untuk semua siswa..."></textarea>
+                <button onclick="kirimInfo()">Kirim & Notifikasi Siswa</button>
+            </div>
+            <h3>Papan Informasi</h3>
+            <div id="infoList"></div>
+        </div>
+
+        <div id="recap" class="tab-content">
+            <h3>Recap Data Absensi</h3>
+            <button onclick="exportExcel()">Download Excel (.xlsx)</button>
+            <button onclick="hapusRecap()" style="background:#ff4d4d;">Hapus Semua Data</button>
+            <table id="recapTable"><thead><tr><th>Foto</th><th>Nama</th><th>Hari</th><th>Tanggal</th><th>Jam</th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
